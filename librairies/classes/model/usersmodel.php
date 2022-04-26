@@ -11,7 +11,7 @@ class UsersModel extends Manager
     {
         $db = $this->dbConnect();
 
-        $selectSql = "SELECT * FROM users WHERE email = :email";
+        $selectSql = "SELECT * FROM users WHERE email = :email OR pseudo = :email";
         $querySql = $db->prepare($selectSql);
         $querySql->execute([
             "email" => $userInfo["email"]
@@ -56,14 +56,16 @@ class UsersModel extends Manager
         ]);
         if (!$querySql->rowCount() > 0) {
             $pwd = password_hash($userInfo["pwd"], PASSWORD_DEFAULT);
-            $insertSql = "INSERT INTO users(firstname,lastname,email,pwd,pseudo) VALUES (:firstname,:lastname,:email,:pwd,:pseudo)";
+            $insertSql = "INSERT INTO users(firstname,lastname,email,pwd,pseudo,adresse,telephone) VALUES (:firstname,:lastname,:email,:pwd,:pseudo,:adresse,:telephone)";
             $querySql = $db->prepare($insertSql);
             $querySql->execute([
                 "firstname" => $userInfo["firstname"],
                 "lastname" => $userInfo["lastname"],
                 "email" => $userInfo["email"],
                 "pwd" => $pwd,
-                "pseudo" => $userInfo["pseudo"]
+                "pseudo" => $userInfo["pseudo"],
+                "adresse" => $userInfo["adresse"],
+                "telephone" => $userInfo["telephone"]
             ]);
             $test = $querySql->errorInfo();
             $userInfo["pwd"] = $pwd;
@@ -89,7 +91,9 @@ class UsersModel extends Manager
         $_SESSION["lastname"] = $resultSql["lastname"];
         $_SESSION["photo"] = $resultSql["profilPhoto"];
         $_SESSION["idUser"] = $resultSql["idUser"];
-        $_SESSION["userType"] = $resultSql["usertype"];
+        $_SESSION["userType"] = $resultSql["userType"];
+        $_SESSION["adresse"] = $resultSql["adresse"];
+        $_SESSION["telephone"] = $resultSql["telephone"];
         // $_SESSION["pwd"] = $resultSql["pwd"];
         $_SESSION["pseudo"] = $resultSql["pseudo"];
         $_SESSION["isConnected"]=true;
@@ -104,9 +108,9 @@ class UsersModel extends Manager
                 return false;
             }
         }
-        if ($userInfo["pwd"] != $userInfo["pwd2"]) {
-            return false;
-        }
+        // if ($userInfo["pwd"] != $userInfo["pwd2"]) {
+        //     return false;
+        // }
         return true;
     }
 

@@ -10,7 +10,9 @@ class UsersController extends Controller{
         echo $response;
     }
     public function register(){
-       echo json_encode($this->model->registerUser($_POST));
+        $response = json_encode($this->model->registerUser($_POST));
+        setcookie('userInfo',$response,time()+(60*30),'/');
+        echo $response;
     }
     public function updateUser(){
         $args = array(
@@ -47,7 +49,7 @@ class UsersController extends Controller{
         }
         session_unset();
         session_destroy();
-        echo "disconnected";
+        echo json_encode("disconnected");
     }
 
 }

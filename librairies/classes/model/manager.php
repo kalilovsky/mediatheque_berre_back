@@ -27,7 +27,18 @@ class Manager
         }
         $query = "SELECT * FROM {$tableModel} " . $condition;
         $querySql = $db->prepare($query);
-        $querySql->execute();
+            $querySql->execute();
+        return $querySql->fetchAll();
+    }
+
+    public function getDistinctAll($condition = null, $tableModel=null){
+        $db = $this->dbConnect();
+        if(is_null($tableModel)){
+            $tableModel = $this->table;
+        }
+        $query = "SELECT DISTINCT ". $condition ." FROM {$tableModel} ";
+        $querySql = $db->prepare($query);
+            $querySql->execute();
         return $querySql->fetchAll();
     }
 
@@ -42,11 +53,15 @@ class Manager
         $query .= implode(", ", $params) . ")";
         $querySql = $db->prepare($query);
         $querySql->execute($data);
+        return $querySql;
     }
 
-    public function update($data,$idArticle){
+    public function update($data,$idArticle,$table=null){
+        if(is_null($table)){
+            $table = $this->table;
+        }
         $db = $this->dbConnect();
-        $query = "UPDATE {$this->table} SET ";
+        $query = "UPDATE {$table} SET ";
         $field = array_keys($data);
         $query .= implode("= ? ,",$field)." = ?";
         // $myArray = array_map(function($key , $value){
