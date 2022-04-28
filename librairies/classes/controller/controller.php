@@ -19,18 +19,12 @@ abstract class Controller
         if ($file["file"]["error"] == 0) {
             $tmpName = $file["file"]['tmp_name'];
             $name = $file["file"]['name'];
-            $allowed_ext = array('avi', 'flv', 'wmv', 'mov', 'mp4','mpg');
-            $isVideo = in_array(end(explode(".", $name)), $allowed_ext);
-            $acceptedFile = (getimagesize($tmpName) || $isVideo) && $file["file"]['size'] < (6000000);
+            $acceptedFile = (getimagesize($tmpName)) && $file["file"]['size'] < (1000000);
             if ($acceptedFile) {
                 move_uploaded_file($tmpName, 'public/articlefile/' . $name);
-                if ($isVideo) {
-                    return "video";
-                } else {
-                    return "image";
-                }
+                echo(json_encode("Upload Réussi"));
             }else{
-                return false;
+                echo(json_encode("Echec de l'upload"));
             }
         }
     }public function uploadFileImg()

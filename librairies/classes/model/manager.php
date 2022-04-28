@@ -31,6 +31,13 @@ class Manager
         return $querySql->fetchAll();
     }
 
+    public function customQuery($query){
+        $db = $this->dbConnect();
+        $querySql = $db->prepare($query);
+            $querySql->execute();
+        return $querySql->fetchAll();
+    }
+
     public function getDistinctAll($condition = null, $tableModel=null){
         $db = $this->dbConnect();
         if(is_null($tableModel)){
@@ -87,5 +94,13 @@ class Manager
             return 'delete done';
         }
         return "problem detected";
+    }
+
+    public function countAll(){
+        $db = $this->dbConnect();
+        $query = "SELECT COUNT(*) as count FROM {$this->table}";
+        $querySql = $db->prepare($query);
+        $querySql->execute();
+        return $querySql->fetch();
     }
 }

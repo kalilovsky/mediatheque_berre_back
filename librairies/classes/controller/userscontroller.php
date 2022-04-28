@@ -35,6 +35,9 @@ class UsersController extends Controller{
         $response["isConnected"] = true;
         echo json_encode($response);
     }
+    public function getCountUsers(){
+        echo(json_encode($this->model->countAll()));
+    }
     public function disconnect(){
         if (ini_get("session.use_cookies")) {
             $params = session_get_cookie_params();

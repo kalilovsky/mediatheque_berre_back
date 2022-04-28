@@ -41,8 +41,7 @@ class ArticlesController extends Controller
         echo (json_encode($this->model->getDistinctAll("editor")));
     }
 
-
-
+    
     public function addArticle()
     {
         $args = array(
@@ -66,7 +65,7 @@ class ArticlesController extends Controller
 
     public function getAllArticles()
     {
-        echo (json_encode($this->model->getAll("INNER JOIN users ON users.idUser = articles.idUser INNER JOIN categories ON articles.idCategory = categories.idCategorie")));
+        echo (json_encode($this->model->getAll("INNER JOIN users ON users.idUser = articles.idUser INNER JOIN categories ON articles.idCategory = categories.idCategorie INNER JOIN subcategories ON subcategories.idSubCategorie = articles.idSubCategorie INNER JOIN collections ON collections.idCollection = articles.idCollection")));
     }
 
     public function searchArticles()
@@ -139,6 +138,9 @@ class ArticlesController extends Controller
         echo (json_encode($this->model->getAll($query . $query1)));
     }
 
+    public function getCountArticles(){
+        echo(json_encode($this->model->countAll()));
+    }
 
 
     public function getArticleById()
@@ -150,6 +152,27 @@ class ArticlesController extends Controller
         $id["idArticle"] = $idArticle;
         $this->model->update($data, $id);
         echo (json_encode($this->model->getAll($query)));
+    }
+
+    public function updateArticle(){
+        $args = array(
+            'idCategory' => FILTER_VALIDATE_INT,
+            'title' => FILTER_DEFAULT,
+            'smallDesc' => FILTER_DEFAULT,
+            'filePath' => FILTER_DEFAULT,
+            'author'  => FILTER_DEFAULT,
+            'stock' => FILTER_VALIDATE_INT,
+            'editor'  => FILTER_DEFAULT,
+            'loanDuration' => FILTER_VALIDATE_INT,
+            'idSubCategorie' => FILTER_VALIDATE_INT,
+            'idCollection' => FILTER_VALIDATE_INT,
+            'format'  => FILTER_DEFAULT,
+            'datePublished'=>FILTER_DEFAULT
+        );
+        $idArticle["idArticle"] = filter_input(INPUT_POST,'idArticle',FILTER_VALIDATE_INT);
+        $data = filter_input_array(INPUT_POST, $args);
+        $this->model->update($data,$idArticle);
+        echo (json_encode('good'));
     }
 
     // public function getArticleByUserId(){
@@ -175,7 +198,7 @@ class ArticlesController extends Controller
         //il faudrait rajouter une vérification d'identité que l'article appartient réelement à l'utilisateur
         //pour le laisser effacer
         if (isset($_SESSION["idUser"])) {
-            $data["idArticle"] = filter_input(INPUT_GET, "idArticle", FILTER_VALIDATE_INT);
+            $data["idArticle"] = filter_input(INPUT_POST, "idArticle", FILTER_VALIDATE_INT);
             echo json_encode($this->model->delete($data));
         } else {
             echo (json_encode("Not Authorised."));
