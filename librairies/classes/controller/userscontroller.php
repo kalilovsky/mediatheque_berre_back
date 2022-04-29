@@ -6,10 +6,19 @@ class UsersController extends Controller{
 
     public function login(){
         $response = json_encode($this->model->loginUser($_POST));
+        // $cookie_options = array(
+        //     'expires' => time() + 60*30,
+        //     'path' => '/',
+        //     // 'domain' => '.domain.com', // leading dot for compatibility or use subdomain
+        //     'secure' => false, // or false
+        //     'httponly' => false, // or false
+        //     'samesite' => 'None' // None || Lax || Strict
+        //   );
         setcookie('userInfo',$response,time()+(60*30),'/');
+        // setcookie('userInfo',$response,$cookie_options);
         echo $response;
     }
-
+    
     public function register(){
         $response = json_encode($this->model->registerUser($_POST));
         setcookie('userInfo',$response,time()+(60*30),'/');

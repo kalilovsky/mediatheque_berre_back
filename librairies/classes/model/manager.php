@@ -128,9 +128,12 @@ abstract class Manager
         return "problem detected";
     }
 
-    public function countAll(){
+    public function countAll($idUser=null){
         $db = $this->dbConnect();
         $query = "SELECT COUNT(*) as count FROM {$this->table}";
+        if($idUser>0){
+            $query .= " WHERE idUser=".$idUser;
+        }
         $querySql = $db->prepare($query);
         $querySql->execute();
         return $querySql->fetch();

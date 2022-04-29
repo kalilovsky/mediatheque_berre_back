@@ -45,21 +45,38 @@ class LoansController extends Controller
         echo(json_encode($this->model->getAll("INNER JOIN (SELECT articles.*, subcategories.SubcategorieName,categories.categorieName FROM articles INNER JOIN categories ON  categories.idCategorie = articles.idCategory INNER JOIN subcategories ON subcategories.idSubCategorie = articles.idSubCategorie ) AS a ON loans.idArticle = a.idArticle WHERE loans.idUser = ".$idUser)));
     }
     public function getAllLoans(){
+        $idUser = filter_input(INPUT_POST,"idUser",FILTER_VALIDATE_INT);
         echo(json_encode($this->model->customQuery("SELECT * ,DATEDIFF(CURRENT_TIMESTAMP,loansDate) as duration FROM loans INNER JOIN (SELECT articles.*, subcategories.SubcategorieName,categories.categorieName FROM articles INNER JOIN categories ON  categories.idCategorie = articles.idCategory INNER JOIN subcategories ON subcategories.idSubCategorie = articles.idSubCategorie ) AS a ON loans.idArticle = a.idArticle INNER JOIN users ON users.idUser = loans.idUser")));
     }
     public function getAllPendingLoans(){
-        echo(json_encode($this->model->customQuery("SELECT * ,DATEDIFF(CURRENT_TIMESTAMP,loansDate) as duration FROM loans INNER JOIN (SELECT articles.*, subcategories.SubcategorieName,categories.categorieName FROM articles INNER JOIN categories ON  categories.idCategorie = articles.idCategory INNER JOIN subcategories ON subcategories.idSubCategorie = articles.idSubCategorie ) AS a ON loans.idArticle = a.idArticle INNER JOIN users ON users.idUser = loans.idUser WHERE loans.status ='encours'")));
+        $idUser = filter_input(INPUT_POST,"idUser",FILTER_VALIDATE_INT);
+        $query = "SELECT * ,DATEDIFF(CURRENT_TIMESTAMP,loansDate) as duration FROM loans INNER JOIN (SELECT articles.*, subcategories.SubcategorieName,categories.categorieName FROM articles INNER JOIN categories ON  categories.idCategorie = articles.idCategory INNER JOIN subcategories ON subcategories.idSubCategorie = articles.idSubCategorie ) AS a ON loans.idArticle = a.idArticle INNER JOIN users ON users.idUser = loans.idUser WHERE loans.status ='encours'";
+        if ($idUser>0){
+            $query .= " AND loans.idUser =".$idUser;
+        }
+        echo(json_encode($this->model->customQuery($query)));
     }
     public function getAllFinishedLoans(){
-        echo(json_encode($this->model->customQuery("SELECT * ,DATEDIFF(CURRENT_TIMESTAMP,loansDate) as duration FROM loans INNER JOIN (SELECT articles.*, subcategories.SubcategorieName,categories.categorieName FROM articles INNER JOIN categories ON  categories.idCategorie = articles.idCategory INNER JOIN subcategories ON subcategories.idSubCategorie = articles.idSubCategorie ) AS a ON loans.idArticle = a.idArticle INNER JOIN users ON users.idUser = loans.idUser WHERE loans.status ='rendu'")));
+        $idUser = filter_input(INPUT_POST,"idUser",FILTER_VALIDATE_INT);
+        $query = "SELECT * ,DATEDIFF(CURRENT_TIMESTAMP,loansDate) as duration FROM loans INNER JOIN (SELECT articles.*, subcategories.SubcategorieName,categories.categorieName FROM articles INNER JOIN categories ON  categories.idCategorie = articles.idCategory INNER JOIN subcategories ON subcategories.idSubCategorie = articles.idSubCategorie ) AS a ON loans.idArticle = a.idArticle INNER JOIN users ON users.idUser = loans.idUser WHERE loans.status ='rendu'";
+        if ($idUser>0){
+            $query .= " AND loans.idUser =".$idUser;
+        }
+        echo(json_encode($this->model->customQuery($query)));
     }
 
     public function getLateLoans(){
-        echo(json_encode($this->model->customQuery("SELECT * ,DATEDIFF(CURRENT_TIMESTAMP,loansDate) as duration FROM loans INNER JOIN (SELECT articles.*, subcategories.SubcategorieName,categories.categorieName FROM articles INNER JOIN categories ON  categories.idCategorie = articles.idCategory INNER JOIN subcategories ON subcategories.idSubCategorie = articles.idSubCategorie ) AS a ON loans.idArticle = a.idArticle INNER JOIN users ON users.idUser = loans.idUser WHERE DATEDIFF(CURRENT_TIMESTAMP,loans.loansDate) >a.loanDuration AND loans.status = 'encours'")));
+        $idUser = filter_input(INPUT_POST,"idUser",FILTER_VALIDATE_INT);
+        $query = "SELECT * ,DATEDIFF(CURRENT_TIMESTAMP,loansDate) as duration FROM loans INNER JOIN (SELECT articles.*, subcategories.SubcategorieName,categories.categorieName FROM articles INNER JOIN categories ON  categories.idCategorie = articles.idCategory INNER JOIN subcategories ON subcategories.idSubCategorie = articles.idSubCategorie ) AS a ON loans.idArticle = a.idArticle INNER JOIN users ON users.idUser = loans.idUser WHERE DATEDIFF(CURRENT_TIMESTAMP,loans.loansDate) >a.loanDuration AND loans.status = 'encours'";
+        if ($idUser>0){
+            $query .= " AND loans.idUser =".$idUser;
+        }
+        echo(json_encode($this->model->customQuery($query)));
     }
-
+    
     public function getCountLoans(){
-        echo(json_encode($this->model->countAll()));
+        $idUser = filter_input(INPUT_POST,"idUser",FILTER_VALIDATE_INT);
+        echo(json_encode($this->model->countAll($idUser)));
     }
 
     public function checkLateLoansByUser(){

@@ -56,7 +56,7 @@ class UsersModel extends Manager
         ]);
         if (!$querySql->rowCount() > 0) {
             $pwd = password_hash($userInfo["pwd"], PASSWORD_DEFAULT);
-            $insertSql = "INSERT INTO users(firstname,lastname,email,pwd,pseudo,adresse,telephone) VALUES (:firstname,:lastname,:email,:pwd,:pseudo,:adresse,:telephone)";
+            $insertSql = "INSERT INTO users(firstname,lastname,email,pwd,pseudo,profilPhoto,adresse,telephone) VALUES (:firstname,:lastname,:email,:pwd,:pseudo,:profilPhoto,:adresse,:telephone)";
             $querySql = $db->prepare($insertSql);
             $querySql->execute([
                 "firstname" => $userInfo["firstname"],
@@ -64,6 +64,7 @@ class UsersModel extends Manager
                 "email" => $userInfo["email"],
                 "pwd" => $pwd,
                 "pseudo" => $userInfo["pseudo"],
+                "profilPhoto" => $userInfo["profilPhoto"],
                 "adresse" => $userInfo["adresse"],
                 "telephone" => $userInfo["telephone"]
             ]);
