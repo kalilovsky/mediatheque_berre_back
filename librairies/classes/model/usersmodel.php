@@ -37,7 +37,7 @@ class UsersModel extends Manager
         }
     }
 
-    public function registerUser($userInfo)
+    public function registerUser($userInfo,$fromAdmin=false)
     {
         if (!$this->verifyUserData($userInfo)) {
             $state = [];
@@ -72,8 +72,12 @@ class UsersModel extends Manager
             $userInfo["usertype"] = "normal";
             $userInfo["profilPhoto"] = "account_default.png";
             $userInfo["idUser"] = $db->lastInsertId();
-            $this->setSession($userInfo);
-            return $_SESSION;
+            if(!$fromAdmin){
+                $this->setSession($userInfo);
+                return $_SESSION;
+            }else{
+                return ("user added");
+            }
         } else {
             $state = [];
             $state["isConnected"]=false;

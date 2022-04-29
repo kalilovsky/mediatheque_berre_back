@@ -27,7 +27,8 @@ abstract class Controller
                 echo(json_encode("Echec de l'upload"));
             }
         }
-    }public function uploadFileImg()
+    }
+    public function uploadFileImg()
     {
         $file = $_FILES;
         if ($file["file"]["error"] == 0) {
@@ -35,9 +36,12 @@ abstract class Controller
             $name = $file["file"]['name'];
             $acceptedFile = (getimagesize($tmpName)) && $file["file"]['size'] < (6000000);
             if ($acceptedFile) {
-                return move_uploaded_file($tmpName, 'public/userprofile/' . $name);
+                if(move_uploaded_file($tmpName, 'public/userprofile/' . $name)){
+                    echo json_encode('upload effectué');
+                }
+                 
             }else{
-                return false;
+                echo json_encode('probleme lors de upload');
             }
         }
     }

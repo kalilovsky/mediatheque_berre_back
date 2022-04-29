@@ -4,7 +4,7 @@ namespace Model ;
 use PDO;
 use PDOException;
 
-class Manager
+abstract class Manager
 {
     protected function dbConnect()
     {
@@ -81,6 +81,38 @@ class Manager
         $querySql = $db->prepare($query);
         $querySql->execute($myArray);
         return $idArticle;
+    }
+
+    public function updateSet($data,$idArticle,$table=null){
+        if(is_null($table)){
+            $table = $this->table;
+        }
+        $db = $this->dbConnect();
+        $query = "UPDATE {$table} SET ";
+        // $field = array_keys($data);
+        // $myArray = array_map(function($key , $value){
+            //     return $key . "=" . $value;
+        // },$field,array_values($data));
+        // $myArray = array_values($data);
+        $condition =  array_map(function($key,$value){
+            if($value){
+                $value1= 1;
+            }else{
+                $value1=0;
+            }
+            return $key . "=" .$value1;   },array_keys($data),array_values($data));
+        // $query .=  array_map(function($key,$value){
+        //     if($value){
+        //         $value1= 1;
+        //     }else{
+        //         $value1=0;
+        //     }
+        //     return $key . "=" .$value1;   },array_keys($data),array_values($data));
+        $query .= implode(",",$condition);
+        // $query .= " WHERE " . implode(" AND ",$condition);
+        $querySql = $db->prepare($query);
+        $querySql->execute();
+        return 'Update Done';
     }
 
     public function delete($data){

@@ -44,28 +44,58 @@ class ArticlesController extends Controller
     
     public function addArticle()
     {
-        $args = array(
-            'idUser' => FILTER_VALIDATE_INT,
-            'idCategory' => FILTER_VALIDATE_INT,
-            'title' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
-            'smallDesc' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
-            'tag' => FILTER_SANITIZE_FULL_SPECIAL_CHARS
-        );
-        $acceptedFile = $this->uploadFile();
-        if ($acceptedFile) {
+        if(isset($_SESSION["idUser"])){
+            $idUser = $_SESSION["idUser"];
+            $args = array(
+                'idCategory' => FILTER_VALIDATE_INT,
+                'title' => FILTER_DEFAULT,
+                'smallDesc' => FILTER_DEFAULT,
+                'filePath' => FILTER_DEFAULT,
+                'author'  => FILTER_DEFAULT,
+                'stock' => FILTER_VALIDATE_INT,
+                'editor'  => FILTER_DEFAULT,
+                'loanDuration' => FILTER_VALIDATE_INT,
+                'idSubCategorie' => FILTER_VALIDATE_INT,
+                'idCollection' => FILTER_VALIDATE_INT,
+                'format'  => FILTER_DEFAULT,
+                'datePublished'=>FILTER_DEFAULT
+            );
             $data = filter_input_array(INPUT_POST, $args);
-            $data["fileType"] = $acceptedFile;
-            $data["filePath"] = $_FILES["file"]["name"];
+            $data['idUser'] = $idUser;
             $this->model->insert($data);
             echo (json_encode("Article inséré correctement"));
-        } else {
-            echo (json_encode("Probleme avec le fichier."));
+        }else{
+            echo(json_encode("Not Authorised."));
         }
     }
 
     public function getAllArticles()
     {
-        echo (json_encode($this->model->getAll("INNER JOIN users ON users.idUser = articles.idUser INNER JOIN categories ON articles.idCategory = categories.idCategorie INNER JOIN subcategories ON subcategories.idSubCategorie = articles.idSubCategorie INNER JOIN collections ON collections.idCollection = articles.idCollection")));
+        echo (json_encode($this->model->getAll("INNER JOIN users ON users.idUser = articles.idUser INNER JOIN categories ON articles.idCategory = categories.idCategorie INNER JOIN subcategories ON subcategories.idSubCategorie = articles.idSubCategorie INNER JOIN collections ON collections.idCollection = articles.idCollection ORDER BY idArticle DESC")));
+    }
+
+    public function updateArticleSettings(){
+        $args = array(
+            'title' => FILTER_VALIDATE_BOOLEAN,
+            'smallDesc' => FILTER_VALIDATE_BOOLEAN,
+            'filePath' => FILTER_VALIDATE_BOOLEAN,
+            'author'  => FILTER_VALIDATE_BOOLEAN,
+            'stock' => FILTER_VALIDATE_BOOLEAN,
+            'editor'  => FILTER_VALIDATE_BOOLEAN,
+            'loanDuration' => FILTER_VALIDATE_BOOLEAN,
+            'idCategory' => FILTER_VALIDATE_BOOLEAN,
+            'idSubCategorie' => FILTER_VALIDATE_BOOLEAN,
+            'idCollection' => FILTER_VALIDATE_BOOLEAN,
+            'idUser'=> FILTER_VALIDATE_BOOLEAN,
+            'format'  => FILTER_VALIDATE_BOOLEAN,
+            'datePublished'=>FILTER_VALIDATE_BOOLEAN,
+        );
+        $data = filter_input_array(INPUT_POST, $args);
+        echo (json_encode($this->model->updateSet($data,array('1'=>'1'),'articlesettings')));
+    }
+
+    public function getArticleSetting(){
+        echo (json_encode($this->model->getAll("","articlesettings")[0]));
     }
 
     public function searchArticles()
